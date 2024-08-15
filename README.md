@@ -13,7 +13,7 @@ or folder structure for easier organization.
 
 ## To-Do
 
-- [] Grow a brain and figure some stuff out
+- [ ] Grow a brain and figure some stuff out
 
 ## Rough Idea
 
