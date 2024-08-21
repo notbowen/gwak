@@ -3,6 +3,8 @@
 
 use crate::adapters::ctfd::CtfdAdapter;
 use crate::types::adapter::Adapter;
+
+use anyhow::Result;
 use clap::Parser;
 
 mod adapters;
@@ -35,7 +37,7 @@ struct Args {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<()> {
     // Parse arguments from user & validate
     let args = Args::parse();
 
@@ -74,8 +76,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )),
     };
 
-    let challenges = adapter.get_challenges().await;
-    info!(&format!("Obtained the following challenges: {:?}", challenges));
+    let challenges = match adapter.get_challenges().await {
+        Ok(c) => c,
+        Err(e) => {
+            error!(&format!("Something went wrong!\n{:?}", e));
+            return Err(e);
+        }
+    };
 
+    info!(&format!("Obtained the following challenges: {:?}", challenges));
     Ok(())
 }

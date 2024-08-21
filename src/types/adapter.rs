@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use anyhow::Result;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
@@ -16,5 +17,5 @@ pub struct Challenge {
 #[async_trait]
 pub trait Adapter {
     /// A function that returns a list of `Challenge` objects
-    async fn get_challenges(&self) -> Vec<Challenge>;
+    async fn get_challenges(&self) -> Result<Vec<Challenge>>;
 }

@@ -1,6 +1,7 @@
 use crate::types::adapter::{Adapter, Challenge};
 
 use async_trait::async_trait;
+use anyhow::Result;
 use reqwest;
 use serde::Deserialize;
 
@@ -48,19 +49,17 @@ impl CtfdAdapter {
 
 #[async_trait]
 impl Adapter for CtfdAdapter {
-    async fn get_challenges(&self) -> Vec<Challenge> {
+    async fn get_challenges(&self) -> Result<Vec<Challenge>> {
         // Get the entire list of challenges to extract their IDs
-        let challenges: IdQueryResponse = match self
+        let res = self
             .client
             .get(format!("{}/api/v1/challenges", self.url))
             .header(reqwest::header::AUTHORIZATION, API_KEY)
             .header(reqwest::header::CONTENT_TYPE, "application/json")
             .send()
-            .await
-        {
-            Ok(res) => res.json().await.unwrap(),
-            Err(e) => panic!(),
-        };
+            .await?;
+
+        let challenges: IdQueryResponse = res.json().await?;
 
         let challenge_ids: Vec<u32> = challenges.data.into_iter().map(|c| c.id).collect();
         let mut challenge_data: Vec<ChallengeQueryResponse> = vec![];
@@ -73,12 +72,11 @@ impl Adapter for CtfdAdapter {
                 .header(reqwest::header::AUTHORIZATION, API_KEY)
                 .header(reqwest::header::CONTENT_TYPE, "application/json")
                 .send()
-                .await
-                .unwrap();
+                .await?;
 
-            challenge_data.push(req.json().await.unwrap());
+            challenge_data.push(req.json().await?);
         }
 
-        challenge_data.iter().map(|c| c.data.clone()).collect()
+        Ok(challenge_data.iter().map(|c| c.data.clone()).collect())
     }
 }
