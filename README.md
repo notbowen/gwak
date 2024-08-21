@@ -13,7 +13,11 @@ or folder structure for easier organization.
 
 ## To-Do
 
-- [ ] Grow a brain and figure some stuff out
+- [-] Implement an adapter for CTFd and get the basic structure out
+- [ ] Implement custom errors
+- [ ] Create a default config directory programatically
+- [ ] Figure out how to parse a default config directory
+- [ ] Implement multithreading to speed up downloading
 
 ## Rough Idea
 
