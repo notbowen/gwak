@@ -13,7 +13,7 @@ or folder structure for easier organization.
 
 ## To-Do
 
-- [-] Implement an adapter for CTFd and get the basic structure out
+- [ ] Implement an adapter for CTFd and get the basic structure out (In Progress)
 - [ ] Implement custom errors
 - [ ] Create a default config directory programatically
 - [ ] Figure out how to parse a default config directory
