@@ -84,6 +84,9 @@ async fn main() -> Result<()> {
         }
     };
 
-    info!(&format!("Obtained the following challenges: {:?}", challenges));
+    info!(&format!(
+        "Obtained the following challenges: {:?}",
+        challenges
+    ));
     Ok(())
 }
