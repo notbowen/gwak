@@ -1,11 +1,9 @@
 use crate::types::adapter::{Adapter, Challenge};
 
-use async_trait::async_trait;
 use anyhow::Result;
+use async_trait::async_trait;
 use reqwest;
 use serde::Deserialize;
-
-const API_KEY: &str = "Token ctfd_afb2c45e6da75e7d6707ce279077bde5fd29d7372fd7044dcc97d0af9b3d565e";
 
 pub struct CtfdAdapter {
     pub client: reqwest::Client,
@@ -37,14 +35,40 @@ impl CtfdAdapter {
         password: Option<String>,
         token: Option<String>,
     ) -> CtfdAdapter {
+        let client = match (&username, &password, &token) {
+            (Some(user), Some(pass), None) => todo!(),
+            (None, None, Some(tok)) => setup_token_client(tok),
+            _ => panic!(),
+        };
+
         CtfdAdapter {
-            client: reqwest::Client::new(),
+            client,
             url,
             username,
             password,
             token,
         }
     }
+}
+
+fn setup_token_client(token: &str) -> reqwest::Client {
+    let mut headers = reqwest::header::HeaderMap::new();
+
+    headers.insert(
+        reqwest::header::AUTHORIZATION,
+        reqwest::header::HeaderValue::from_str(format!("Token {}", token).as_str()).unwrap(),
+    );
+    headers.insert(
+        reqwest::header::CONTENT_TYPE,
+        reqwest::header::HeaderValue::from_static("application/json"),
+    );
+
+    let client = reqwest::Client::builder()
+        .default_headers(headers)
+        .build()
+        .unwrap();
+
+    client
 }
 
 #[async_trait]
@@ -54,8 +78,6 @@ impl Adapter for CtfdAdapter {
         let res = self
             .client
             .get(format!("{}/api/v1/challenges", self.url))
-            .header(reqwest::header::AUTHORIZATION, API_KEY)
-            .header(reqwest::header::CONTENT_TYPE, "application/json")
             .send()
             .await?;
 
@@ -69,8 +91,6 @@ impl Adapter for CtfdAdapter {
             let req = self
                 .client
                 .get(format!("{}/api/v1/challenges/{}", self.url, id))
-                .header(reqwest::header::AUTHORIZATION, API_KEY)
-                .header(reqwest::header::CONTENT_TYPE, "application/json")
                 .send()
                 .await?;
 
